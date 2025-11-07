@@ -21,18 +21,6 @@ function App() {
   const [authorFilter, setAuthorFilter] = useState("");
   const [view, setView] = useState("catalog"); // 'catalog', 'loans' or 'details'
 
-  // compute the currently selected book (used for details view)
-  const selectedBook = books.find((b) => b.id === selectedId) || null;
-
-  // If the app is trying to show details but the selected book was removed
-  // or is missing, move back to catalog. Do not call setState during render.
-  useEffect(() => {
-    if (view === "details" && !selectedBook) {
-      setSelectedId(null);
-      setView("catalog");
-    }
-  }, [view, selectedBook]);
-
   function addBook(book) {
     setBooks((prev) => [book, ...prev]);
   }
@@ -90,9 +78,20 @@ function App() {
       <h1>Book Catalog</h1>
 
       {view === "details" ? (
-        selectedBook ? (
-          <BookDetails book={selectedBook} onBack={() => setView("catalog")} />
-        ) : null
+        (() => {
+          const selectedBook = books.find((b) => b.id === selectedId);
+          if (!selectedBook) {
+            // fallback to catalog if book not found
+            setView("catalog");
+            return null;
+          }
+          return (
+            <BookDetails
+              book={selectedBook}
+              onBack={() => setView("catalog")}
+            />
+          );
+        })()
       ) : view === "loans" ? (
         <main className="loan-view">
           <div className="loan-header">

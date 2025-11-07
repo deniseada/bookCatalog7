@@ -13,6 +13,10 @@ function AddBookForm({ add, closeModal, book = null }) {
       subtitle: "",
       image: data.get("image") || "",
       url: data.get("url") || "",
+      publisher: data.get("publisher") || "",
+      year: data.get("year") || "",
+      language: data.get("language") || "",
+      pages: data.get("pages") || "",
       id: idFromForm || (book && book.id) || nanoid(),
     };
 
