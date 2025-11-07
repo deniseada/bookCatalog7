@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Books from "./book";
+import BookDetails from "./BookDetails";
 import "./index.css";
 import AddBookForm from "./components/AddBookForm";
 import Modal from "./components/Modal";
@@ -18,7 +19,19 @@ function App() {
 
   const [selectedId, setSelectedId] = useState(null);
   const [authorFilter, setAuthorFilter] = useState("");
-  const [view, setView] = useState("catalog"); // 'catalog' or 'loans'
+  const [view, setView] = useState("catalog"); // 'catalog', 'loans' or 'details'
+
+  // compute the currently selected book (used for details view)
+  const selectedBook = books.find((b) => b.id === selectedId) || null;
+
+  // If the app is trying to show details but the selected book was removed
+  // or is missing, move back to catalog. Do not call setState during render.
+  useEffect(() => {
+    if (view === "details" && !selectedBook) {
+      setSelectedId(null);
+      setView("catalog");
+    }
+  }, [view, selectedBook]);
 
   function addBook(book) {
     setBooks((prev) => [book, ...prev]);
@@ -76,7 +89,11 @@ function App() {
     <div className="container">
       <h1>Book Catalog</h1>
 
-      {view === "loans" ? (
+      {view === "details" ? (
+        selectedBook ? (
+          <BookDetails book={selectedBook} onBack={() => setView("catalog")} />
+        ) : null
+      ) : view === "loans" ? (
         <main className="loan-view">
           <div className="loan-header">
             <button
@@ -162,6 +179,10 @@ function App() {
                     key={book.id}
                     isSelected={selectedId === book.id}
                     onSelect={selectBook}
+                    onViewDetails={(id) => {
+                      setSelectedId(id);
+                      setView("details");
+                    }}
                   />
                 ))}
             </div>

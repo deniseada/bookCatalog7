@@ -1,4 +1,13 @@
-function Books({ id, title, author, image, isSelected, onSelect, loan }) {
+function Books({
+  id,
+  title,
+  author,
+  image,
+  isSelected,
+  onSelect,
+  onViewDetails,
+  loan,
+}) {
   return (
     <div
       className={`book ${isSelected ? "book-bg" : ""}`}
@@ -9,7 +18,19 @@ function Books({ id, title, author, image, isSelected, onSelect, loan }) {
         <img className="book-image" src={image} alt={title || ""} />
       ) : null}
       <div className="book-info">
+        {title ? <p className="book-title">{title}</p> : null}
         {author ? <p className="book-author">{`by ${author}`}</p> : null}
+        <div className="book-controls">
+          <button
+            className="btn-details"
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewDetails && onViewDetails(id);
+            }}
+          >
+            View Details
+          </button>
+        </div>
       </div>
     </div>
   );
